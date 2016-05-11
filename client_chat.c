@@ -68,16 +68,16 @@ int main(int argc, char **argv){
     servidor_remoto.sin_port = htons(porta_remota);
     servidor_remoto.sin_addr.s_addr = htonl(ip_remoto);
 
-    printf("Calminhaa aee.... Estamos aguardando a conexão!\n");
+    printf("Calminhaa aee.... Estamos aguardando a conexao!\n");
 
     remoto_tamanho = sizeof(servidor_remoto);
 
     if(connect(socket_remoto, (struct sockaddr *) &servidor_remoto, &remoto_tamanho) == SOCKET_ERROR){                                // INVALID_SOCKET = -1
         WSACleanup();
-        msg_erro("Xii... A conexão falhou! :/ \n");
+        msg_erro("Xii... A conexao falhou! :/ \n");
     }
 
-    printf("\o/ Aeee! Conexão estabelecida com %s\n", inet_ntoa(servidor_remoto.sin_addr));
+    printf("\o/ Aeee! Conexao estabelecida com %s\n", inet_ntoa(servidor_remoto.sin_addr));
 
     do{
         memset(&mensagem, 0, TAM_BUFFER);                                           // Limpa o BUFFER
@@ -95,7 +95,7 @@ int main(int argc, char **argv){
         printf("Mensagem enviada com sucesso!");
     }   while(strcmp(mensagem, EXIT_CALL_STRING));                                   // sai quando receber um "#quit" do cliente
 
-    printf("...Encerrando sua conexão...\n");
+    printf("...Encerrando sua conexao...\n");
     WSACleanup();
     closesocket(socket_remoto);
 
