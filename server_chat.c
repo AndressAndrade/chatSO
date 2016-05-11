@@ -43,7 +43,7 @@ void recebe_porta_local(){
 int main(int argc, char **argv){
     // Inicia o WinSock, isso é realizado por causa do Windows
     if (WSAStartup(MAKEWORD(2, 0), &wsa_data) != 0){
-        msg_erro("WSAStartup() falhou! \n");
+        msg_erro("WSAStartup() falhou!\n");
     }
 
     socket_local = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);               // Criando o socket local para o servidor
@@ -51,9 +51,9 @@ int main(int argc, char **argv){
 int remoto_tamanho = 0;
     if (socket_local == SOCKET_ERROR){
         WSACleanup();
-        msg_erro("Xii.... O Socket não foi criado com sucesso! :/ \n");
+        msg_erro("Xii.... O Socket não foi criado com sucesso! :/\n");
     }
-    printf("\o/ Ebaaa!! Socket criado com sucesso!");
+    printf("\o/ Ebaaa!! Socket criado com sucesso!\n");
 
     recebe_porta_local();
 
@@ -67,16 +67,16 @@ int remoto_tamanho = 0;
         WSACleanup();
     exit(EXIT_FAILURE);
         closesocket(socket_local);
-        msg_erro("Xii... A conexão do endereço com o Socket falhou! :/ \n");
+        msg_erro("Xii... A conexao do endereço com o Socket falhou! :/\n");
     }
 
     if (listen(socket_local, MAX_CLIENTES) == SOCKET_ERROR){            // SOCKET_ERROR = -1
         WSACleanup();
         closesocket(socket_local);
-        msg_erro("Xii... A comunicação falhou! :/ \n");
+        msg_erro("Xii... A comunicacao falhou! :/ \n");
     }
 
-    printf("Calminhaa aee.... Estamos aguardando a conexão!");
+    printf("Calminhaa aee.... Estamos aguardando a conexao!\n");
 
     remoto_tamanho = sizeof(servidor_remoto);
 
@@ -84,11 +84,11 @@ int remoto_tamanho = 0;
     if(socket_remoto == INVALID_SOCKET){                                // INVALID_SOCKET = -1
         WSACleanup();
         closesocket(socket_local);
-        msg_erro("Xii... A conexão falhou! :/ \n");
+        msg_erro("Xii... A conexao falhou! :/\n");
     }
 
-    printf("\o/ Aeee! Conexão estabelecida com %s \n", inet_ntoa(servidor_remoto.sin_addr));
-    printf("...Aguardando novas conexões e mensagens...");
+    printf("\o/ Aeee! Conexao estabelecida com %s \n", inet_ntoa(servidor_remoto.sin_addr));
+    printf("...Aguardando novas conexoes e mensagens...");
 
     do{
         memset(&mensagem, 0, TAM_BUFFER);                                           // Limpa o BUFFER
