@@ -82,7 +82,7 @@ int main(int argc, char **argv){
     do{
         memset(&mensagem, 0, TAM_BUFFER);                                           // Limpa o BUFFER
 
-        printf("\nDigite a mensagem: ");
+        printf("Digite a mensagem: ");
         gets(mensagem);
         fflush(stdin);
 
