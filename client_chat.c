@@ -47,7 +47,7 @@ void recebe_porta_remota(){
 int main(int argc, char **argv){
     // Inicia o WinSock, isso é realizado por causa do Windows
     if (WSAStartup(MAKEWORD(2, 0), &wsa_data) != 0){
-        msg_erro("WSAStartup() falhou! \n");
+        msg_erro("\nWSAStartup() falhou!\n");
     }
 
     recebe_ip();
@@ -57,9 +57,9 @@ int main(int argc, char **argv){
 
     if (socket_remoto == SOCKET_ERROR){
         WSACleanup();
-        msg_erro("Xii.... O Socket não foi criado com sucesso! :/ \n");
+        msg_erro("Xii.... O Socket não foi criado com sucesso! :/\n");
     }
-    printf("\o/ Ebaaa!! Socket criado com sucesso!");
+    printf("\o/ Ebaaa!! Socket criado com sucesso!\n");
 
 
     memset(&servidor_remoto, 0, sizeof(servidor_remoto));                     // zera a estrutura servidor_remoto
@@ -68,7 +68,7 @@ int main(int argc, char **argv){
     servidor_remoto.sin_port = htons(porta_remota);
     servidor_remoto.sin_addr.s_addr = htonl(ip_remoto);
 
-    printf("Calminhaa aee.... Estamos aguardando a conexão!");
+    printf("Calminhaa aee.... Estamos aguardando a conexão!\n");
 
     remoto_tamanho = sizeof(servidor_remoto);
 
@@ -77,12 +77,12 @@ int main(int argc, char **argv){
         msg_erro("Xii... A conexão falhou! :/ \n");
     }
 
-    printf("\o/ Aeee! Conexão estabelecida com %s \n", inet_ntoa(servidor_remoto.sin_addr));
+    printf("\o/ Aeee! Conexão estabelecida com %s\n", inet_ntoa(servidor_remoto.sin_addr));
 
     do{
         memset(&mensagem, 0, TAM_BUFFER);                                           // Limpa o BUFFER
 
-        printf("Digite a mensagem: ");
+        printf("\nDigite a mensagem: ");
         gets(mensagem);
         fflush(stdin);
 
