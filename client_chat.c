@@ -15,6 +15,7 @@
 #define EXIT_CALL_STRING "#quit"
 
 int socket_remoto = 0;
+int remoto_tamanho = 0;
 
 unsigned short porta_remota = 0;
 
@@ -54,23 +55,24 @@ int main(int argc, char **argv){
 
     socket_remoto = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);               // Criando o socket local para o servidor
 
-    if (socket_local == SOCKET_ERROR){
+    if (socket_remoto == SOCKET_ERROR){
         WSACleanup();
         msg_erro("Xii.... O Socket não foi criado com sucesso! :/ \n");
     }
     printf("\o/ Ebaaa!! Socket criado com sucesso!");
 
-    recebe_porta();
 
     memset(&servidor_remoto, 0, sizeof(servidor_remoto));                     // zera a estrutura servidor_remoto
 
     servidor_remoto.sin_family = AF_INET;
-    servidor_remoto.sin_port = htons(porta_local);
-    servidor_remoto.sin_addr.s_addr = htonl(INADDR_ANY);
+    servidor_remoto.sin_port = htons(porta_remota);
+    servidor_remoto.sin_addr.s_addr = htonl(ip_remoto);
 
     printf("Calminhaa aee.... Estamos aguardando a conexão!");
 
-    if(connect(socket_remoto, (struct sockaddr *) &servidor_remoto, &sizeof(servidor_remoto)) == SOCKET_ERROR){                                // INVALID_SOCKET = -1
+    remoto_tamanho = sizeof(servidor_remoto);
+
+    if(connect(socket_remoto, (struct sockaddr *) &servidor_remoto, &remoto_tamanho) == SOCKET_ERROR){                                // INVALID_SOCKET = -1
         WSACleanup();
         msg_erro("Xii... A conexão falhou! :/ \n");
     }
@@ -101,4 +103,3 @@ int main(int argc, char **argv){
     return 0;
 
 }
-
