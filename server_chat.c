@@ -31,7 +31,6 @@ WSADATA wsa_data;
 void msg_erro(char *msg){                                                   // Exibe uma mensagem de erro e termina o programa
     fprintf(stderr, msg);
     system("PAUSE");
-    exit(EXIT_FAILURE);
 }
 
 void recebe_porta_local(){
@@ -49,13 +48,14 @@ int main(int argc, char **argv){
 
     socket_local = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);               // Criando o socket local para o servidor
 
+int remoto_tamanho = 0;
     if (socket_local == SOCKET_ERROR){
         WSACleanup();
         msg_erro("Xii.... O Socket não foi criado com sucesso! :/ \n");
     }
     printf("\o/ Ebaaa!! Socket criado com sucesso!");
 
-    recebe_porta();
+    recebe_porta_local();
 
     memset(&servidor_local, 0, sizeof(servidor_local));                     // zera a estrutura servidor_local
 
@@ -65,6 +65,7 @@ int main(int argc, char **argv){
 
     if (bind(socket_local, (struct sockaddr *) &servidor_local, sizeof(servidor_local)) == SOCKET_ERROR){     // interligando o socket com o endereço (local)
         WSACleanup();
+    exit(EXIT_FAILURE);
         closesocket(socket_local);
         msg_erro("Xii... A conexão do endereço com o Socket falhou! :/ \n");
     }
@@ -77,7 +78,9 @@ int main(int argc, char **argv){
 
     printf("Calminhaa aee.... Estamos aguardando a conexão!");
 
-    socket_remoto = accept(socket_local, (struct sockaddr *) &servidor_remoto, &sizeof(servidor_remoto));
+    remoto_tamanho = sizeof(servidor_remoto);
+
+    socket_remoto = accept(socket_local, (struct sockaddr *) &servidor_remoto, &remoto_tamanho);
     if(socket_remoto == INVALID_SOCKET){                                // INVALID_SOCKET = -1
         WSACleanup();
         closesocket(socket_local);
@@ -105,7 +108,3 @@ int main(int argc, char **argv){
     return 0;
 
 }
-
-
-
-
