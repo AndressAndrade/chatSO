@@ -1,0 +1,5 @@
+Comando         Argumentos      Descrição
+--------------------------------------------------------------
+AJUDA           ---          	Exibe a lista de comandos.
+CLIENTES        ---		Exibe os clientes conectados.
+SAIR            ---             Encerra a conexão do servidor.

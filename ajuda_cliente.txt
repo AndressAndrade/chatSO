@@ -1,0 +1,7 @@
+Comando      Argumentos     			Descrição
+--------------------------------------------------------------------------------------------------
+ENVIAR	     <MENSAGEM>                 	Enviar a <MENSAGEM> para todos os clientes conectados.
+ENVIARPARA   <NOME DO CLIENTE> <MENSAGEM>     	Enviar a mensagem apenas para o nome do cliente informado.
+CONECTADOS      ---                        	Exibe todos os clientes conectados.
+AJUDA           ---                        	Exibe a lista de comandos disponíveis.
+SAIR            ---                        	Encerra a conexão do cliente.
