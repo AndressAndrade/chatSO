@@ -2,8 +2,9 @@
    ------------ CHAT CLIENTE/SERVIDOR -----------
    ---------- Equipe: Andressa Andrade ----------
    --------------- Renata Antunes --------------- */
-/* ------------------ SERVIDOR ------------------ */
+/* ------------------ CLIENTE ------------------- */
  
+// Biblioteca 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,44 +19,39 @@
 #include <sys/types.h>
 #include <sys/socket.h>
  
-// Variaveis constantes
-
+// Variáveis constantes
 #define IP "127.0.0.1"          // IP definido
 #define PORTA 31337             // Porta utilizada definida
 
-#define TAM_BUFFER 3000         // tamanho do buffer
-#define TAM_NOME 15             // tamanho do nome
-#define BUFF 2048               
+#define TAM_BUFFER 3000         // Tamanho do buffer
+#define TAM_NOME 30             // Tamanho do nome
+#define BUFF 2048               //
 
 // Estrutura
-
 struct PACOTE {
-    char comando[TAM_NOME];     // comando para instrução
-    char nome[TAM_NOME];        // nome do cliente
-    char buff[TAM_BUFFER];      // mensagem
+    char comando[TAM_NOME];     // Comando para instrução
+    char nome[TAM_NOME];        // Número do nome do clientes
+    char buff[TAM_BUFFER];      // Mensagem
 };
  
 struct CLIENTE {
-        int socket_servidor;    // socket servidor
-        char nome[TAM_NOME];    // nome do cliente
+        int socket_servidor;    // Socket servidor
+        char nome[TAM_NOME];    // Nome do cliente
 };
  
 struct THREADINFO {
-    pthread_t thread_ID;        // ponteiro do thread
-    int socket_servidor;        // socket servidor
+    pthread_t thread_ID;        // Ponteiro do Thread
+    int socket_servidor;        // Socket servidor
 };
  
-// Variaveis globais
-
-char servidor[] = "";
-int porta;
-int estaConectado, socket_servidor;
+// Variáveis globais
+int estaConectado;
+int socket_servidor;
 char comando[BUFF];
 struct CLIENTE cli;
 
 // Funções
-
-int connect_with_server();
+int conectarAoServidor();
 void inserirNome(struct CLIENTE *cli);
 void logout(struct CLIENTE *cli);
 void login(struct CLIENTE *cli);
@@ -65,53 +61,35 @@ void enviarParaCliente(struct CLIENTE *cli, char * target, char *msg);
 void mostrarClientes(struct CLIENTE *cli);
 
 // Main
-
 int main(int argc, char **argv) {
-    int socket_servidor, tamanho_nome;
+    int socket_servidor;
+    int tamanho_nome;
 
-    /*
-    if (argc != 4){
-        printf ("\nUso: client_chat <CLIENT_NAME> <SERVER_ADDRESS> <SERVER_PORT>\n");
+    if (argc != 2){
+        printf ("O programa client_chat.c deve ser executado com o argumento nome do cliente.\nSegue exemplo abaixo:\nclient_chat <NOME DO CLIENTE> \n");
         return (1);
     }
-
-
-    strcpy(servidor, argv[2]);
-    porta = atoi(argv[3]);
-    memset(&cli, 0, sizeof(struct CLIENTE));
-    */
 
     strcpy(cli.nome, argv[1]);
     login(&cli);
 
     while(estaConectado) {
         gets(comando);
-        if(!strncmp(comando, "EXIT", 4)) {
+        if(!strncmp(comando, "SAIR", 4)) {
             logout(&cli);
             break;
         }
-        if(!strncmp(comando, "HELP", 4)) {
-            FILE *fin = fopen("help.txt", "r");
+        if(!strncmp(comando, "AJUDA", 5)) {
+            FILE *fin = fopen("ajuda_cliente.txt", "r");
             if(fin != NULL) {
                 while(fgets(comando, BUFF-1, fin)) puts(comando);
                 fclose(fin);
             }
             else {
-                fprintf(stderr, "Help file not found...\n");
+                fprintf(stderr, "Arquivo não encontrado.\n");
             }
         }
-        else if(!strncmp(comando, "NAME", 4)) {
-            char *ptr = strtok(comando, " ");
-            ptr = strtok(0, " ");
-            memset(cli.nome, 0, sizeof(char) * TAM_NOME);
-            if(ptr != NULL) {
-                tamanho_nome =  strlen(ptr);
-                if(tamanho_nome > TAM_NOME) ptr[TAM_NOME] = 0;
-                strcpy(cli.nome, ptr);
-                inserirNome(&cli);
-            }
-        }
-        else if(!strncmp(comando, "SENDTO", 6)) {
+        else if(!strncmp(comando, "ENVIARPARA", 10)) {
             char *ptr = strtok(comando, " ");
             char temp[TAM_NOME];
             ptr = strtok(0, " ");
@@ -125,22 +103,21 @@ int main(int argc, char **argv) {
                 enviarParaCliente(&cli, temp, ptr);
             }
         }
-        else if(!strncmp(comando, "WHO", 3)) {
+        else if(!strncmp(comando, "CONECTADO", 9)) {
             mostrarClientes(&cli);
         }
-        else if(!strncmp(comando, "SEND", 4)) {
+        else if(!strncmp(comando, "ENVIAR", 5)) {
             enviarParaTodos(&cli, &comando[5]);
         }
-        else fprintf(stderr, "Unknown comando...\n");
+        else fprintf(stderr,"Comando -%s- desconhecido.\nPara mais informações, acessar o comando AJUDA.\n", comando);
     }
     return 0;
 }
 
-//################### Function #################
-
+// Descrição das funções
 void login(struct CLIENTE *cli) {
     int recvd;
-    socket_servidor = connect_with_server();
+    socket_servidor = conectarAoServidor();
     if(socket_servidor >= 0) {
         estaConectado = 1;
         cli->socket_servidor = socket_servidor;
@@ -152,52 +129,44 @@ void login(struct CLIENTE *cli) {
         strcpy(pacote.comando, "LOGIN");
         strcpy(pacote.nome, cli->nome);
     
-               
-        /* send request to close this connetion */
         enviar = send(socket_servidor, (void *)&pacote, sizeof(struct PACOTE), 0);
 
         pthread_create(&threadinfo.thread_ID, NULL, receber, (void *)&threadinfo);
- 
     }
     else {
-        fprintf(stderr, "Connection rejected...\n");
+        fprintf(stderr, "Conexão rejeitada.\n");
     }
 }
  
-int connect_with_server() {
+int conectarAoServidor() {
     int socket_cliente, err_ret;
     struct sockaddr_in servidor_endereco;
-    struct hostent *to;
+    struct hostent *para;
  
-    /*
-    if((to = gethostbyname(IP))==NULL) {
-        err_ret = errno;
-        fprintf(stderr, "gethostbyname() error...\n");
-        return err_ret;
-    }
-    */
- 
+ 	// Criando o socket do cliente
     socket_cliente = socket(AF_INET, SOCK_STREAM, 0);
-    /* open a socket */
+
+    // Abrindo o socket do cliente
     if(socket_cliente == -1) {
         err_ret = errno;
-        fprintf(stderr, "socket() error...\n");
+        fprintf(stderr, "Socket falhou!\n");
         return err_ret;
     }
+    printf("Socket ok!\n");
  
-    /* set initial values */
+    // Inserindo os valores
     servidor_endereco.sin_family = AF_INET;
     servidor_endereco.sin_port = htons(PORTA);
     servidor_endereco.sin_addr.s_addr = inet_addr(IP);
  
-    /* try to connect with servidor */
+    // Tentando a conexão com o servidor
     if(connect(socket_cliente, (struct sockaddr *)&servidor_endereco, sizeof(struct sockaddr)) == -1) {
         err_ret = errno;
-        fprintf(stderr, "connect() error...\n");
+        fprintf(stderr, "Connect falhou!\n");
         return err_ret;
     }
     else {
-        printf("Sucessfully Connected...\n");
+        printf("Conectado com sucesso...\n");
         return socket_cliente;
     }
 }
@@ -207,15 +176,14 @@ void logout(struct CLIENTE *cli) {
     struct PACOTE pacote;
     
     if(!estaConectado) {
-        fprintf(stderr, "You are not connected...\n");
+        fprintf(stderr, "Você não está conectado!\n");
         return;
     }
     
     memset(&pacote, 0, sizeof(struct PACOTE));
-    strcpy(pacote.comando, "EXIT");
+    strcpy(pacote.comando, "SAIR");
     strcpy(pacote.nome, cli->nome);
-    
-    /* send request to close this connetion */
+
     enviar = send(socket_servidor, (void *)&pacote, sizeof(struct PACOTE), 0);
     estaConectado = 0;
     close(socket_servidor);
@@ -226,10 +194,8 @@ void inserirNome(struct CLIENTE *cli) {
     struct PACOTE pacote;
     
     memset(&pacote, 0, sizeof(struct PACOTE));
-    strcpy(pacote.comando, "NAME");
     strcpy(pacote.nome, cli->nome);
-    
-    /* send request to close this connetion */
+
     enviar = send(socket_servidor, (void *)&pacote, sizeof(struct PACOTE), 0);
 }
  
@@ -239,22 +205,26 @@ void *receber(void *parametro) {
     
     while(estaConectado) {
         recvd = recv(socket_servidor, (void *)&pacote, sizeof(struct PACOTE), 0);
-        if(!strcmp(pacote.comando, "EXIT")){
-            printf("Client's nome has been used... Try again!\n");
+        if(!strcmp(pacote.comando, "SAIR")){
+            printf("Você está sendo desconectado!\n");
             logout(&cli);
 	    exit(0);
             break; 
-        }else if(!strcmp(pacote.comando, "WHO")){
-            printf("List of clients: %s \n", pacote.buff);
-        }else if (recvd > 0) {
+        }
+        else if(!strcmp(pacote.comando, "CONECTADO")){
+            printf("Lista de clientes conectados: %s \n", pacote.buff);
+        }
+        else if (recvd > 0) {
             printf("%s: %s\n", pacote.nome, pacote.buff);
-        }else if (!recvd){
-            fprintf(stderr, "Connection lost from servidor...\n");
+        }
+        else if (!recvd){
+            fprintf(stderr, "Conexão com o servidor perdida!\n");
             estaConectado = 0;
             close(socket_servidor);
             break;
-        }else{
-            fprintf(stderr, "Receipt of message has failed...\n");
+        }
+        else{
+            fprintf(stderr, "O recebimento da mensagem falhou!\n");
             break;
         }
         memset(&pacote, 0, sizeof(struct PACOTE));
@@ -267,18 +237,17 @@ void enviarParaTodos(struct CLIENTE *cli, char *msg) {
     struct PACOTE pacote;
     
     if(!estaConectado) {
-        fprintf(stderr, "You are not connected...\n");
+        fprintf(stderr, "Você não está conectado!\n");
         return;
     }
     
     msg[TAM_BUFFER] = 0;
     
     memset(&pacote, 0, sizeof(struct PACOTE));
-    strcpy(pacote.comando, "SEND");
+    strcpy(pacote.comando, "ENVIAR");
     strcpy(pacote.nome, cli->nome);
     strcpy(pacote.buff, msg);
     
-    /* send request to close this connetion */
     enviar = send(socket_servidor, (void *)&pacote, sizeof(struct PACOTE), 0);
 }
  
@@ -289,26 +258,26 @@ void enviarParaCliente(struct CLIENTE *cli, char *target, char *msg) {
     if(target == NULL) {
         return;
     }
-    
+
     if(msg == NULL) {
         return;
     }
-    
+
     if(!estaConectado) {
-        fprintf(stderr, "You are not connected...\n");
+        fprintf(stderr, "Você não está conectado!\n");
         return;
     }
+
     msg[TAM_BUFFER] = 0;
     targetlen = strlen(target);
     
     memset(&pacote, 0, sizeof(struct PACOTE));
-    strcpy(pacote.comando, "SENDTO");
+    strcpy(pacote.comando, "ENVIARPARA");
     strcpy(pacote.nome, cli->nome);
     strcpy(pacote.buff, target);
     strcpy(&pacote.buff[targetlen], " ");
     strcpy(&pacote.buff[targetlen+1], msg);
-    
-    /* send request to close this connetion */
+
     enviar = send(socket_servidor, (void *)&pacote, sizeof(struct PACOTE), 0);
 }
 
@@ -317,12 +286,12 @@ void mostrarClientes(struct CLIENTE *cli) {
     struct PACOTE pacote;
     
     if(!estaConectado) {
-        fprintf(stderr, "You are not connected...\n");
+        fprintf(stderr, "Você não está conectado.\n");
         return;
     }
     
     memset(&pacote, 0, sizeof(struct PACOTE));
-    strcpy(pacote.comando, "WHO");
+    strcpy(pacote.comando, "CONECTADO");
     strcpy(pacote.nome, cli->nome);
     enviar = send(socket_servidor, (void *)&pacote, sizeof(struct PACOTE), 0);
 }
