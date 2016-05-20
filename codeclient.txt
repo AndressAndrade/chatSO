@@ -1,0 +1,87 @@
+Clientes:
+
+Bibliotecas:
+bibliotecas usadas para tratar entrada,saida,memoria,string,erros
+errno.h - fornece macros para identificar e relatar erros de execucao atraves de codigos de erro
+stdio.h - possui definicoes de subrotinas relativas as opercoes de entrada/saida, como leitura de dados 
+digitados no teclado e exibicao de informacoes na tela do programa de computador.
+scanf()
+prinf()
+string.h - manipulacao de cadeias de caracteres e regiao de memoria
+unistd.h
+---
+netdb.h - definicoes de rede basicas, lib usada para converter host para ip
+bibliotecas padores para o uso da socket:
+netinet
+arpa
+sys/types
+sys/socket
+
+
+IP 127.0.0.1 - Local IP
+Portas 31337
+
+Definicao das estruturas
+
+nosso programa vai ter um pacote
+<comando + nome + msg>
+exemplo de casos ja implementados
+SENDTO pessoa msg
+SEND msg
+
+estrutura client
+possui um inteiro que denota o socket_servidor
+e o nome do cliente
+
+Cabeçalho das funcoes disponiveis
+
+Chamada de main
+int main(int argc, char **argv) {
+
+se o programa for iniciado com o umero de argumentos diferentes de 2, deve ser acusado
+um erro
+ if (argc != 2){
+        printf ("O programa client_chat.c deve ser executado com o argumento nome do cliente.\nSegue exemplo abaixo:\nclient_chat <NOME DO CLIENTE> \n");
+        return (1);
+    }
+    
+Estamos utilizando Transmission Control Protocol TCP tem como principal caracteristica a transmissao de dados em maquinas que diferem em sua arquiteturas
+
+um socket identifica univocamente um usuario tcp
+permite a associacao entre processos de aplicaao
+
+socket(familia, tipo, protocolo)
+no codigo:
+socket_cliente = socket(AF_INET, SOCK_STREAM, 0);
+
+AF_INET(ARPA internet protocols) - a mais usada
+sock_stream esta relacionado com o tcp
+fornece sequencial, seguro, e em ambos os sentidos, conexoes baseadas em "byte stream" Dados fora da banda do mecanismo de transmissao devem ser suportados. O protocolo TCP é baseado neste tipo de socket
+
+tipo 0 denota IP #internet protocol, pseudo protocol number
+
+funcao Connect:
+é a responsavel pela conexao do socket cliente com o servidor
+as bibliotecas ligadas a isso são:
+#include <sys/types.h>
+#include <sys/socket.h>
+
+declaracao
+int connect(Meusocket,(struct sockaddr * )&server, sizeof(server));
+
+memset - manipular memora
+
+memset(buff,'\0',sizeof(char)*MAXSIZE);
+preenchendo a memoria com"\0"
+
+htons significa "host to network short", como
+é short trabalha com 2 bytes,mas ha ainda
+outros tipos como: htonl("host to network
+long",4 bytes), ntós("network to host
+short",2 bytes), ntól("network to host
+long", 4 bytes).
+
+
+
+    
+  
