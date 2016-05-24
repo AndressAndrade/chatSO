@@ -229,7 +229,7 @@ void lixoLista(struct LISTA *lista) {
     printf("Clientes conectados: %d\n", lista->tamanho);
     for(aux1 = lista->topo; aux1 != NULL; aux1 = aux1->proximo) {
         thr_info = &aux1->threadinfo;
-        printf("[%d] %s\n", thr_info->socket_servidor, thr_info->nome);
+        printf("%s\n", thr_info->nome);
     }
 }
 
