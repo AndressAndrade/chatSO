@@ -3,11 +3,11 @@ Desenvolvido para a disciplina de Sistemas Operacionais ministrada pelo professo
 Componentes: Andressa Andrade e Renata Antunes
 		
 
- 1. Como gerar os binários:
+1. Como gerar os binários:
 
 #> make
 
- 2. Sobre o programa server_chat.c
+2. Sobre o programa server_chat.c
 
 O server_chat não recebe nenhum argumento. 
 Uma lista encadeada foi criada contendo como nó uma estrutura de dados:  socket e nome do cliente. 
@@ -20,4 +20,10 @@ Além disso, o servidor implementa mutex para proteger a região compartilhada.
 
 O cliente recebe apenas um argumento que é o seu nome. 
 Quando o cliente recebe uma mensagem do servidor, ele a imprime imediatamente na tela. 
+
+Como executar o programa:
+
+gcc ./server_chat.c -o server -lpthread
+
+gcc ./client_chat.c -o client -lpthread
 
