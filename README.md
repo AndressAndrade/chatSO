@@ -23,7 +23,7 @@ Quando o cliente recebe uma mensagem do servidor, ele a imprime imediatamente na
 
 Como executar o programa:
 
-gcc ./server_chat.c -o server -lpthread
+gcc ./server_chat.c -o server -w -lpthread
 
-gcc ./client_chat.c -o client -lpthread
+gcc ./client_chat.c -o client -w -lpthread
 
