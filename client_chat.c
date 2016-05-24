@@ -106,8 +106,8 @@ int main(int argc, char **argv) {
         else if(!strncmp(comando, "CONECTADO", 9)) {
             mostrarClientes(&cli);
         }
-        else if(!strncmp(comando, "ENVIAR", 5)) {
-            enviarParaTodos(&cli, &comando[5]);
+        else if(!strncmp(comando, "ENVIAR", 6)) {
+            enviarParaTodos(&cli, &comando[6]);
         }
         else fprintf(stderr,"Comando -%s- desconhecido.\nPara mais informações, acessar o comando AJUDA.\n", comando);
     }
